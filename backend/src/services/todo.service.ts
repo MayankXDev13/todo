@@ -90,16 +90,5 @@ export const getTodosService = async ({
   };
 };
 
-export const getTodoByIdService = async (
-  id: string,
-  userId: string,
-): Promise<TodoRow | null> => {
-  const todo = await db
-    .select()
-    .from(Todo)
-    .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
-    .limit(1);
 
-  return todo[0] ?? null;
-};
 

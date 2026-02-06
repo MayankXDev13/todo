@@ -7,8 +7,9 @@ import { z } from "zod";
 import { ApiResponse } from "../../utils/ApiResponse";
 import {
   getTodosService,
-  getTodoByIdService,
+
 } from "../../services/todo.service";
+import { and, eq } from "drizzle-orm";
 
 export const createTodo = asyncHandler(async (req: Request, res: Response) => {
   const { title, description, dueDate, priority, categoryId } = req.body;
@@ -96,12 +97,13 @@ export const getTodoById = asyncHandler(async (req: Request, res: Response) => {
 
   const { id } = req.params;
 
-  // Validate ID format
   if (!id || typeof id !== "string") {
     throw new ApiError(400, "Invalid todo ID");
   }
 
-  const todo = await getTodoByIdService(id, userId);
+  const todo = await db.query.Todo.findFirst({
+    where: and(eq(Todo.id, id), eq(Todo.userId, userId)),
+  });
 
   if (!todo) {
     throw new ApiError(404, "Todo not found");
@@ -110,4 +112,72 @@ export const getTodoById = asyncHandler(async (req: Request, res: Response) => {
   return res
     .status(200)
     .json(new ApiResponse(200, todo, "Todo fetched successfully"));
+});
+
+export const updateTodo = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { title, description, dueDate, priority, categoryId } = req.body;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  if (!id || typeof id !== "string") {
+    throw new ApiError(400, "Invalid todo ID");
+  }
+
+  const updateData: Record<string, any> = {};
+  if (title !== undefined) updateData.title = title;
+  if (description !== undefined) updateData.description = description;
+  if (dueDate !== undefined) updateData.dueDate = dueDate;
+  if (priority !== undefined) updateData.priority = priority;
+  if (categoryId !== undefined) updateData.categoryId = categoryId;
+
+  if (Object.keys(updateData).length === 0) {
+    throw new ApiError(400, "No fields to update");
+  }
+
+  const updated = await db
+    .update(Todo)
+    .set({
+      ...updateData,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+    .returning();
+
+  if (!updated.length) {
+    throw new ApiError(404, "Todo not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updated[0], "Todo updated successfully"));
+});
+
+export const deleteTodo = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  if (!id || typeof id !== "string") {
+    throw new ApiError(400, "Invalid todo ID");
+  }
+
+  const deleted = await db
+    .delete(Todo)
+    .where(and(eq(Todo.id, id), eq(Todo.userId, userId)))
+    .returning();
+
+  if (!deleted.length) {
+    throw new ApiError(404, "Todo not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, deleted[0], "Todo deleted successfully"));
 });
