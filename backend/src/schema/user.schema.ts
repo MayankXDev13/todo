@@ -1,10 +1,11 @@
-import { varchar } from "drizzle-orm/pg-core";
-import { timestamp } from "drizzle-orm/pg-core";
-import { index } from "drizzle-orm/pg-core";
-import { uniqueIndex } from "drizzle-orm/pg-core";
-import { boolean } from "drizzle-orm/pg-core";
-import { uuid } from "drizzle-orm/pg-core";
-import { pgTable } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const User = pgTable(
   "users",
@@ -23,10 +24,7 @@ export const User = pgTable(
     forgotPasswordToken: varchar("forgot_password_token", { length: 512 }),
     forgotPasswordTokenExpiresAt: timestamp(
       "forgot_password_token_expires_at",
-      {
-        mode: "date",
-        withTimezone: true,
-      },
+      { mode: "date", withTimezone: true }
     ),
     emailVerificationToken: varchar("email_verification_token", {
       length: 512,
@@ -45,5 +43,5 @@ export const User = pgTable(
     index("refresh_token_idx").on(table.refreshToken),
     index("forgot_password_token_idx").on(table.forgotPasswordToken),
     index("email_verification_token_idx").on(table.emailVerificationToken),
-  ],
+  ]
 );
