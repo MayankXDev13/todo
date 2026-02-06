@@ -24,7 +24,6 @@ export const Todo = pgTable("todos", {
     .default("medium")
     .notNull(),
   categoryId: uuid("category_id")
-    .notNull()
     .references(() => Category.id, { onDelete: "cascade" }),
   isCompleted: boolean("is_completed").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
