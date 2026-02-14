@@ -26,6 +26,13 @@ const generateAccessAndRefreshToken = async (userId: string) => {
       throw new ApiError(404, "User not found");
     }
 
+    if (
+      !process.env.ACCESS_TOKEN_SECRET ||
+      !process.env.REFRESH_TOKEN_SECRET
+    ) {
+      throw new ApiError(500, "Server configuration error");
+    }
+
     // Generate access token
     const accessToken = jwt.sign(
       {
@@ -83,6 +90,8 @@ const generateTemporaryToken = () => {
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
+
+    logger.info("Registering user", { email, username, password });
 
     if (!email || !username || !password) {
       throw new ApiError(400, "All fields are required");
@@ -278,8 +287,10 @@ export const resendEmailVerification = asyncHandler(
 
 export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response) => {
+
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
+
 
     logger.info(`Incoming Refresh Token: ${incomingRefreshToken}`);
 
