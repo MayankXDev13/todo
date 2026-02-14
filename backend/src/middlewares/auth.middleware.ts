@@ -39,7 +39,10 @@ export const verifyJWT = asyncHandler(
         throw new ApiError(401, "Invalid access token");
       }
 
-      req.user = user;
+      req.user = {
+        ...user,
+        username: user.username ?? "",
+      };
 
       next();
     } catch (error) {
@@ -51,5 +54,5 @@ export const verifyJWT = asyncHandler(
       }
       throw new ApiError(401, "Authentication failed");
     }
-  }
+  },
 );

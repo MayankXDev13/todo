@@ -243,7 +243,7 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
 export const resendEmailVerification = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await db.query.User.findFirst({
-      where: eq(User.id, req.user!.userId!),
+      where: eq(User.id, req.user!.id),
     });
 
     if (!user) {

@@ -1,0 +1,27 @@
+services:
+  backend:
+    image: todo-app-backend
+    container_name: todo-backend
+    ports:
+      - "8000:8000"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - todo-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://localhost:8000/api/v1/healthcheck",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  todo-network:
+    driver: bridge
