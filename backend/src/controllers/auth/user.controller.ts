@@ -26,10 +26,7 @@ const generateAccessAndRefreshToken = async (userId: string) => {
       throw new ApiError(404, "User not found");
     }
 
-    if (
-      !process.env.ACCESS_TOKEN_SECRET ||
-      !process.env.REFRESH_TOKEN_SECRET
-    ) {
+    if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
       throw new ApiError(500, "Server configuration error");
     }
 
@@ -287,10 +284,8 @@ export const resendEmailVerification = asyncHandler(
 
 export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response) => {
-
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
-
 
     logger.info(`Incoming Refresh Token: ${incomingRefreshToken}`);
 
@@ -439,8 +434,11 @@ export const changeCurrentPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
 
+    logger.info(`Old Password: ${oldPassword}`);
+    logger.info(`New Password: ${newPassword}`);
+
     const user = await db.query.User.findFirst({
-      where: eq(User.id, req.user!.userId!),
+      where: eq(User.id, req.user!.id!),
     });
 
     const isPasswordValid = bcrypt.compare(oldPassword, user!.password!);
