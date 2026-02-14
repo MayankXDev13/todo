@@ -3,23 +3,16 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { ApiError } from "../../utils/ApiError";
 import { Todo } from "../../schema";
 import { db } from "../../db/db";
-import { z } from "zod";
 import { ApiResponse } from "../../utils/ApiResponse";
-import {
-  getTodosService,
-
-} from "../../services/todo.service";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, ilike, sql, SQL } from "drizzle-orm";
+import { getPagination } from "../../utils/pagination";
 
 export const createTodo = asyncHandler(async (req: Request, res: Response) => {
   const { title, description, dueDate, priority, categoryId } = req.body;
+  const userId = req.user?.id;
 
-  if (!req.user?.id) {
+  if (!userId) {
     throw new ApiError(401, "Unauthorized");
-  }
-
-  if (!title) {
-    throw new ApiError(400, "Title is required");
   }
 
   const todo = await db
@@ -27,10 +20,10 @@ export const createTodo = asyncHandler(async (req: Request, res: Response) => {
     .values({
       title,
       description,
-      dueDate,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
       priority,
       categoryId,
-      userId: req.user.id,
+      userId,
     })
     .returning();
 
@@ -43,20 +36,6 @@ export const createTodo = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(201, todo[0], "Todo created successfully"));
 });
 
-const GetTodosQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().positive().max(100).optional().default(10),
-  search: z.string().max(255).optional(),
-  userId: z.string().optional(),
-  completed: z
-    .enum(["true", "false"])
-    .transform((val) => val === "true")
-    .optional(),
-  priority: z.enum(["low", "medium", "high"]).optional(),
-});
-
-type GetTodosQuery = z.infer<typeof GetTodosQuerySchema>;
-
 export const getTodos = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
 
@@ -64,28 +43,70 @@ export const getTodos = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(401, "Unauthorized");
   }
 
-  const validationResult = GetTodosQuerySchema.safeParse(req.query);
+  const { page, limit, search, completed, priority } = req.query as {
+    page?: string;
+    limit?: string;
+    search?: string;
+    completed?: string;
+    priority?: "low" | "medium" | "high";
+  };
 
-  if (!validationResult.success) {
-    throw new ApiError(400, "Invalid query parameters", [
-      validationResult.error.flatten().fieldErrors,
-    ]);
+  const pageNum = page ? parseInt(page) : 1;
+  const limitNum = limit ? parseInt(limit) : 10;
+  const completedBool = completed === "true" ? true : completed === "false" ? false : undefined;
+
+  const { offset, perPage, currentPage } = getPagination(pageNum, limitNum);
+
+  const filters: SQL[] = [];
+  filters.push(eq(Todo.userId, userId));
+
+  if (completedBool !== undefined) {
+    filters.push(eq(Todo.isCompleted, completedBool));
   }
 
-  const { page, limit, search, completed, priority } = validationResult.data;
+  if (priority) {
+    filters.push(eq(Todo.priority, priority));
+  }
 
-  const result = await getTodosService({
-    page,
-    limit,
-    search,
-    completed,
-    userId,
-    priority: priority || "low",
-  });
+  const searchQuery = search?.trim();
+  if (searchQuery && searchQuery.length > 0) {
+    filters.push(ilike(Todo.title, `%${searchQuery}%`));
+  }
+
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
+  const [todos, countResult] = await Promise.all([
+    db
+      .select()
+      .from(Todo)
+      .where(whereClause)
+      .orderBy(desc(Todo.createdAt))
+      .limit(perPage)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`cast(count(*) as integer)` })
+      .from(Todo)
+      .where(whereClause),
+  ]);
+
+  const total = countResult[0]?.count ?? 0;
+  const totalPages = Math.ceil(total / perPage);
+  const hasNextPage = currentPage < totalPages;
+  const hasPreviousPage = currentPage > 1;
 
   return res
     .status(200)
-    .json(new ApiResponse(200, result, "Todos fetched successfully"));
+    .json(new ApiResponse(200, {
+      data: todos,
+      meta: {
+        page: currentPage,
+        limit: perPage,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    }, "Todos fetched successfully"));
 });
 
 export const getTodoById = asyncHandler(async (req: Request, res: Response) => {
@@ -96,10 +117,6 @@ export const getTodoById = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { id } = req.params;
-
-  if (!id || typeof id !== "string") {
-    throw new ApiError(400, "Invalid todo ID");
-  }
 
   const todo = await db.query.Todo.findFirst({
     where: and(eq(Todo.id, id), eq(Todo.userId, userId)),
@@ -123,20 +140,12 @@ export const updateTodo = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(401, "Unauthorized");
   }
 
-  if (!id || typeof id !== "string") {
-    throw new ApiError(400, "Invalid todo ID");
-  }
-
   const updateData: Record<string, any> = {};
   if (title !== undefined) updateData.title = title;
   if (description !== undefined) updateData.description = description;
-  if (dueDate !== undefined) updateData.dueDate = dueDate;
+  if (dueDate !== undefined) updateData.dueDate = new Date(dueDate);
   if (priority !== undefined) updateData.priority = priority;
   if (categoryId !== undefined) updateData.categoryId = categoryId;
-
-  if (Object.keys(updateData).length === 0) {
-    throw new ApiError(400, "No fields to update");
-  }
 
   const updated = await db
     .update(Todo)
@@ -162,10 +171,6 @@ export const deleteTodo = asyncHandler(async (req: Request, res: Response) => {
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized");
-  }
-
-  if (!id || typeof id !== "string") {
-    throw new ApiError(400, "Invalid todo ID");
   }
 
   const deleted = await db
