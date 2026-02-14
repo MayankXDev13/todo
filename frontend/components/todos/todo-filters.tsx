@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Filter, X } from 'lucide-react';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +24,7 @@ export function TodoFilters() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
       <div className="relative flex-1 max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <FaSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search todos..."
           value={todoFilters.search}
@@ -82,7 +82,7 @@ export function TodoFilters() {
             onClick={resetTodoFilters}
             className="h-9 px-2 text-muted-foreground"
           >
-            <X className="mr-1 h-4 w-4" />
+            <FaTimes className="mr-1 h-4 w-4" />
             Clear
           </Button>
         )}

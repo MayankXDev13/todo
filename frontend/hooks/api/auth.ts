@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { apiClient, handleApiError } from '@/lib/api';
 import { ApiResponse } from '@/types/models';
 import { useAuthStore } from '@/stores/auth-store';
@@ -78,6 +79,7 @@ const resendVerification = async () => {
 export function useLogin() {
   const { login } = useAuthStore();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: loginUser,
@@ -89,6 +91,7 @@ export function useLogin() {
         });
         queryClient.invalidateQueries({ queryKey: ['currentUser'] });
         toast.success(response.message);
+        router.push('/todos');
       }
     },
     onError: (error) => {

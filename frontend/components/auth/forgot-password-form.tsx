@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, CheckCircle } from 'lucide-react';
+import { FaEnvelope, FaCheckCircle } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,7 +31,7 @@ export function ForgotPasswordForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <CheckCircle className="h-16 w-16 text-green-500" />
+            <FaCheckCircle className="h-16 w-16 text-green-500" />
           </div>
           <CardTitle className="text-2xl text-center">Check Your Email</CardTitle>
           <CardDescription className="text-center">
@@ -51,7 +51,7 @@ export function ForgotPasswordForm() {
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
         <div className="flex items-center justify-center mb-4">
-          <Mail className="h-10 w-10 text-primary" />
+          <FaEnvelope className="h-10 w-10 text-primary" />
         </div>
         <CardTitle className="text-2xl text-center">Forgot Password?</CardTitle>
         <CardDescription className="text-center">

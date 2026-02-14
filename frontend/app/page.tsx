@@ -1,15 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  CheckSquare,
-  ArrowRight,
-  Zap,
-  Shield,
-  Calendar,
-  BarChart3,
-  Moon,
-  Sparkles,
-} from "lucide-react";
+  FaCheckSquare,
+  FaArrowRight,
+  FaBolt,
+  FaShieldAlt,
+  FaCalendarAlt,
+  FaChartBar,
+  FaMoon,
+  FaStar,
+} from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -22,7 +22,7 @@ export default function Home() {
             href="/"
             className="flex items-center gap-2 px-3 font-bold text-lg"
           >
-            <CheckSquare className="h-5 w-5 text-primary" />
+            <FaCheckSquare className="h-5 w-5 text-primary" />
             <span>TodoApp</span>
           </Link>
 
@@ -74,7 +74,7 @@ export default function Home() {
           <div className="container mx-auto max-w-7xl">
             <div className="flex flex-col items-center justify-center gap-6 py-20 text-center sm:py-24 md:py-32">
               <div className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-sm shadow-sm">
-                <Sparkles className="h-4 w-4 text-yellow-500" />
+                <FaStar className="h-4 w-4 text-yellow-500" />
                 <span className="text-muted-foreground">
                   New: Calendar view now available
                 </span>
@@ -103,7 +103,7 @@ export default function Home() {
                     className="h-12 gap-2 px-8 text-base shadow-lg transition hover:scale-[1.02]"
                   >
                     Start for Free
-                    <ArrowRight className="h-4 w-4" />
+                    <FaArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/login">
@@ -155,38 +155,38 @@ export default function Home() {
 
             <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                {
-                  icon: <CheckSquare className="h-6 w-6" />,
+                  {
+                  icon: <FaCheckSquare className="h-6 w-6" />,
                   title: "Smart Task Management",
                   desc: "Create, organize, and track tasks with intuitive workflows.",
                   color: "bg-primary/10 text-primary",
                 },
-                {
-                  icon: <Zap className="h-6 w-6" />,
+                  {
+                  icon: <FaBolt className="h-6 w-6" />,
                   title: "Priority Levels",
                   desc: "Focus on what matters most with smart prioritization.",
                   color: "bg-orange-500/10 text-orange-500",
                 },
-                {
-                  icon: <Calendar className="h-6 w-6" />,
+                  {
+                  icon: <FaCalendarAlt className="h-6 w-6" />,
                   title: "Calendar View",
                   desc: "Visual planning for better time management.",
                   color: "bg-blue-500/10 text-blue-500",
                 },
-                {
-                  icon: <BarChart3 className="h-6 w-6" />,
+                  {
+                  icon: <FaChartBar className="h-6 w-6" />,
                   title: "Productivity Analytics",
                   desc: "Track completion rates and performance insights.",
                   color: "bg-green-500/10 text-green-500",
                 },
-                {
-                  icon: <Moon className="h-6 w-6" />,
+                  {
+                  icon: <FaMoon className="h-6 w-6" />,
                   title: "Dark Mode",
                   desc: "Comfortable viewing experience, day or night.",
                   color: "bg-purple-500/10 text-purple-500",
                 },
-                {
-                  icon: <Shield className="h-6 w-6" />,
+                  {
+                  icon: <FaShieldAlt className="h-6 w-6" />,
                   title: "Secure & Private",
                   desc: "JWT authentication with encrypted data storage.",
                   color: "bg-red-500/10 text-red-500",
@@ -232,7 +232,7 @@ export default function Home() {
                     className="h-12 gap-2 px-8 shadow-md"
                   >
                     Create Free Account
-                    <ArrowRight className="h-4 w-4" />
+                    <FaArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               </div>
@@ -246,7 +246,7 @@ export default function Home() {
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
-              <CheckSquare className="h-5 w-5 text-primary" />
+            <FaCheckSquare className="h-5 w-5 text-primary" />
               <span className="font-semibold">TodoApp</span>
             </div>
             <p className="text-sm text-muted-foreground">

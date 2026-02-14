@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 
 interface PaginationProps {
@@ -28,7 +28,7 @@ export function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={!hasPreviousPage}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <FaChevronLeft className="h-4 w-4" />
         Previous
       </Button>
       
@@ -43,7 +43,7 @@ export function Pagination({
         disabled={!hasNextPage}
       >
         Next
-        <ChevronRight className="h-4 w-4" />
+        <FaChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );

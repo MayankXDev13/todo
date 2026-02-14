@@ -3,13 +3,12 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { 
-  Calendar, 
-  Clock, 
-  MoreHorizontal, 
-  Pencil, 
-  Trash2, 
-  AlertCircle 
-} from 'lucide-react';
+  FaCalendarAlt, 
+  FaEllipsisH, 
+  FaEdit, 
+  FaTrashAlt, 
+  FaExclamationCircle 
+} from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -57,13 +56,13 @@ export function TodoItem({ todo }: TodoItemProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+        return 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+        return 'bg-gray-300 text-gray-900 dark:bg-gray-600 dark:text-gray-100';
       case 'low':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+        return 'bg-gray-400 text-gray-900 dark:bg-gray-500 dark:text-gray-100';
       default:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
@@ -75,7 +74,7 @@ export function TodoItem({ todo }: TodoItemProps) {
         className={cn(
           'group flex items-start gap-3 rounded-lg border p-4 transition-all hover:shadow-sm',
           todo.isCompleted && 'bg-muted/50',
-          isOverdue && 'border-red-300 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/20'
+          isOverdue && 'border-gray-400 bg-gray-100/50 dark:border-gray-500 dark:bg-gray-800/20'
         )}
       >
         <Checkbox
@@ -99,19 +98,19 @@ export function TodoItem({ todo }: TodoItemProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
-                  <MoreHorizontal className="h-4 w-4" />
+                  <FaEllipsisH className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                  <Pencil className="mr-2 h-4 w-4" />
+                  <FaEdit className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => setIsDeleteDialogOpen(true)}
-                  className="text-destructive focus:text-destructive"
+                  className="text-gray-700 dark:text-gray-300 focus:text-gray-700 dark:focus:text-gray-300"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <FaTrashAlt className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -138,11 +137,11 @@ export function TodoItem({ todo }: TodoItemProps) {
             {todo.dueDate && (
               <span className={cn(
                 'flex items-center gap-1 text-xs',
-                isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-muted-foreground'
+                isOverdue ? 'text-gray-700 dark:text-gray-300 font-medium' : 'text-muted-foreground'
               )}>
-                <Calendar className="h-3 w-3" />
+                <FaCalendarAlt className="h-3 w-3" />
                 {format(new Date(todo.dueDate), 'MMM d, yyyy')}
-                {isOverdue && <AlertCircle className="h-3 w-3 ml-1" />}
+                {isOverdue && <FaExclamationCircle className="h-3 w-3 ml-1" />}
               </span>
             )}
           </div>
@@ -168,7 +167,7 @@ export function TodoItem({ todo }: TodoItemProps) {
             <AlertDialogAction 
               onClick={handleDelete}
               disabled={deleteTodo.isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500"
             >
               {deleteTodo.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>

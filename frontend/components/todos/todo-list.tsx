@@ -8,7 +8,7 @@ import { TodoListSkeleton } from '@/components/todos/todo-list-skeleton';
 import { Pagination } from '@/components/todos/pagination';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckSquare, Loader2 } from 'lucide-react';
+import { FaCheckSquare } from 'react-icons/fa';
 
 export function TodoList() {
   const [page, setPage] = useState(1);
@@ -42,7 +42,7 @@ export function TodoList() {
   if (todos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <CheckSquare className="h-12 w-12 text-muted-foreground/50" />
+        <FaCheckSquare className="h-12 w-12 text-muted-foreground/50" />
         <h3 className="mt-4 text-lg font-semibold">No todos yet</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           {todoFilters.search || todoFilters.completed !== null || todoFilters.priority

@@ -1,22 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { 
-  CheckSquare, 
-  Calendar, 
-  BarChart3, 
-  Settings, 
-  LogOut, 
-  User, 
-  Sun, 
-  Moon,
-  Menu,
-  X,
-  ChevronDown
-} from 'lucide-react';
+  FaCheckSquare, 
+  FaCalendarAlt, 
+  FaChartBar, 
+  FaCog, 
+  FaSignOutAlt, 
+  FaSun, 
+  FaMoon,
+  FaBars,
+  FaTimes
+} from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -31,17 +29,22 @@ import { useLogout } from '@/hooks/api/auth';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { name: 'Todos', href: '/todos', icon: CheckSquare },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Statistics', href: '/stats', icon: BarChart3 },
+  { name: 'Todos', href: '/todos', icon: FaCheckSquare },
+  { name: 'Calendar', href: '/calendar', icon: FaCalendarAlt },
+  { name: 'Statistics', href: '/stats', icon: FaChartBar },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const { user, currentUser } = useAuthStore();
+  const { currentUser } = useAuthStore();
   const logout = useLogout();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     logout.mutate();
@@ -56,7 +59,7 @@ export function Header() {
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
         <Link href="/todos" className="flex items-center gap-2 font-bold text-xl">
-          <CheckSquare className="h-6 w-6 text-primary" />
+          <FaCheckSquare className="h-6 w-6 text-foreground" />
           <span className="hidden sm:inline">TodoApp</span>
         </Link>
 
@@ -70,10 +73,10 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}
+               className={cn(
+                 "flex items-center gap-2 text-sm font-medium transition-colors hover:text-foreground",
+                 isActive ? "text-foreground" : "text-muted-foreground"
+               )}
               >
                 <Icon className="h-4 w-4" />
                 {item.name}
@@ -91,8 +94,11 @@ export function Header() {
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="h-9 w-9"
           >
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            {mounted && theme === 'dark' ? (
+              <FaSun className="h-4 w-4" />
+            ) : (
+              <FaMoon className="h-4 w-4" />
+            )}
             <span className="sr-only">Toggle theme</span>
           </Button>
 
@@ -101,7 +107,7 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                  <AvatarFallback className="bg-gray-800 text-white dark:bg-gray-600 dark:text-gray-100 text-sm">
                     {currentUser?.username ? getInitials(currentUser.username) : 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -123,7 +129,7 @@ export function Header() {
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/settings" className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
+                  <FaCog className="mr-2 h-4 w-4" />
                   Settings
                 </Link>
               </DropdownMenuItem>
@@ -133,7 +139,7 @@ export function Header() {
                 disabled={logout.isPending}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <FaSignOutAlt className="mr-2 h-4 w-4" />
                 {logout.isPending ? 'Logging out...' : 'Log out'}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -146,7 +152,7 @@ export function Header() {
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <FaTimes className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
           </Button>
         </div>
       </div>

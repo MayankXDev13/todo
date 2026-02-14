@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, CheckCircle2, Clock, ListTodo } from 'lucide-react';
+import { FaChartBar, FaCheckCircle, FaClock, FaListAlt } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'Statistics - TodoApp',
@@ -25,7 +25,7 @@ export default function StatsPage() {
               <CardTitle className="text-sm font-medium">
                 Total Todos
               </CardTitle>
-              <ListTodo className="h-4 w-4 text-muted-foreground" />
+              <FaListAlt className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">--</div>
@@ -40,7 +40,7 @@ export default function StatsPage() {
               <CardTitle className="text-sm font-medium">
                 Completed
               </CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+              <FaCheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">--</div>
@@ -55,7 +55,7 @@ export default function StatsPage() {
               <CardTitle className="text-sm font-medium">
                 Pending
               </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <FaClock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">--</div>
@@ -70,7 +70,7 @@ export default function StatsPage() {
               <CardTitle className="text-sm font-medium">
                 Completion Rate
               </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <FaChartBar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">--%</div>
