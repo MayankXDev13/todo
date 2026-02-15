@@ -1,0 +1,1319 @@
+{
+  "info": {
+    "_postman_id": "todo-api-collection-001",
+    "name": "Todo API",
+    "description": "Postman collection for Todo API with Authentication, Todos, and Categories endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and management endpoints",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"johndoe\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "register"]
+            },
+            "description": "Creates a new user account. Authentication not required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"johndoe\",\n  \"password\": \"SecurePass123\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/register",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 201,\n  \"success\": true,\n  \"message\": \"User registered successfully\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"email\": \"user@example.com\",\n      \"username\": \"johndoe\",\n      \"loginType\": \"email_password\",\n      \"isEmailVerified\": false,\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n      \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "login"]
+            },
+            "description": "Authenticates a user and returns tokens. Authentication not required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/login",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"User logged in successfully\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"email\": \"user@example.com\",\n      \"username\": \"johndoe\",\n      \"profilePicture\": null,\n      \"isEmailVerified\": false\n    },\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "logout"]
+            },
+            "description": "Logs out the current user and invalidates tokens. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/logout",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "logout"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "accessToken=; Max-Age=0"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "refreshToken=; Max-Age=0"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"User logged out successfully\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Access Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/refresh-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "refresh-token"]
+            },
+            "description": "Generates a new access token using a refresh token."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/refresh-token",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "refresh-token"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Access token refreshed\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/current-user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "current-user"]
+            },
+            "description": "Retrieves information about the currently authenticated user."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/current-user",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "current-user"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Current user fetched successfully\",\n  \"data\": {\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"email\": \"user@example.com\",\n    \"username\": \"johndoe\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/verify-email/{{verificationToken}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "verify-email", "{{verificationToken}}"]
+            },
+            "description": "Verifies user's email address using a verification token sent via email."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/verify-email/{{verificationToken}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "verify-email", "{{verificationToken}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Email is verified\",\n  \"data\": {\n    \"isEmailVerified\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Resend Email Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/resend-email-verification",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "resend-email-verification"]
+            },
+            "description": "Resends the email verification link. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/resend-email-verification",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "resend-email-verification"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Mail has been sent to your mail ID\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/forgot-password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "forgot-password"]
+            },
+            "description": "Initiates password reset process by sending a reset link to email."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/forgot-password",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "forgot-password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Password reset mail has been sent on your mail id\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Forgotten Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"NewSecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/reset-password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "reset-password"]
+            },
+            "description": "Resets password using the token from reset email."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"NewSecurePass123\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/reset-password",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "reset-password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Password reset successfully\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Current Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"CurrentPass123\",\n  \"newPassword\": \"NewSecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/users/change-password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "users", "change-password"]
+            },
+            "description": "Changes password for logged-in user. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"oldPassword\": \"CurrentPass123\",\n  \"newPassword\": \"NewSecurePass123\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/users/change-password",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "users", "change-password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Password changed successfully\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Todos",
+      "description": "Todo management endpoints",
+      "item": [
+        {
+          "name": "Create Todo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Buy groceries\",\n  \"description\": \"Milk, eggs, and bread\",\n  \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n  \"priority\": \"high\",\n  \"categoryId\": \"{{categoryId}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos"]
+            },
+            "description": "Creates a new todo item. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Buy groceries\",\n  \"description\": \"Milk, eggs, and bread\",\n  \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n  \"priority\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 201,\n  \"success\": true,\n  \"message\": \"Todo created successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"title\": \"Buy groceries\",\n    \"description\": \"Milk, eggs, and bread\",\n    \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"priority\": \"high\",\n    \"categoryId\": null,\n    \"isCompleted\": false,\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Todos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Retrieves all todos with pagination, filtering, and sorting. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "createdAt"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "desc"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Todos fetched successfully\",\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n        \"title\": \"Buy groceries\",\n        \"description\": \"Milk, eggs, and bread\",\n        \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n        \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"priority\": \"high\",\n        \"categoryId\": null,\n        \"isCompleted\": false,\n        \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n        \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n      }\n    ],\n    \"meta\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 25,\n      \"totalPages\": 3,\n      \"hasNextPage\": true,\n      \"hasPreviousPage\": false\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Todo by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos", "{{todoId}}"]
+            },
+            "description": "Retrieves a specific todo by its ID. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos", "{{todoId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Todo fetched successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"title\": \"Buy groceries\",\n    \"description\": \"Milk, eggs, and bread\",\n    \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"priority\": \"high\",\n    \"categoryId\": null,\n    \"isCompleted\": false,\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Todo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Buy groceries and vegetables\",\n  \"description\": \"Milk, eggs, bread, and vegetables\",\n  \"dueDate\": \"2024-01-20T10:00:00.000Z\",\n  \"priority\": \"medium\",\n  \"isCompleted\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos", "{{todoId}}"]
+            },
+            "description": "Updates an existing todo. Only provided fields will be updated. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Buy groceries and vegetables\",\n  \"description\": \"Milk, eggs, bread, and vegetables\",\n  \"dueDate\": \"2024-01-20T10:00:00.000Z\",\n  \"priority\": \"medium\",\n  \"isCompleted\": true\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos", "{{todoId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Todo updated successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"title\": \"Buy groceries and vegetables\",\n    \"description\": \"Milk, eggs, bread, and vegetables\",\n    \"dueDate\": \"2024-01-20T10:00:00.000Z\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"priority\": \"medium\",\n    \"categoryId\": null,\n    \"isCompleted\": true,\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Toggle Todo Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos/{{todoId}}/toggle",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos", "{{todoId}}", "toggle"]
+            },
+            "description": "Toggles the completed status of a todo between true and false. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos/{{todoId}}/toggle",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos", "{{todoId}}", "toggle"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Todo marked as completed\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"title\": \"Buy groceries\",\n    \"description\": \"Milk, eggs, and bread\",\n    \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"priority\": \"high\",\n    \"categoryId\": null,\n    \"isCompleted\": true,\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Todo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "todos", "{{todoId}}"]
+            },
+            "description": "Deletes a todo permanently. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/todos/{{todoId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "todos", "{{todoId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Todo deleted successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"title\": \"Buy groceries\",\n    \"description\": \"Milk, eggs, and bread\",\n    \"dueDate\": \"2024-01-15T10:00:00.000Z\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"priority\": \"high\",\n    \"categoryId\": null,\n    \"isCompleted\": false,\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Category management endpoints",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Work\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/categories",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "Creates a new category for the authenticated user. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Work\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/categories",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "categories"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 201,\n  \"success\": true,\n  \"message\": \"Category created successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"name\": \"Work\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/categories?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "categories"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Retrieves all categories with pagination, filtering, and sorting. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/categories?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "categories"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "createdAt"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "desc"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Categories fetched successfully\",\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n        \"name\": \"Work\",\n        \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n        \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n      }\n    ],\n    \"meta\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 5,\n      \"totalPages\": 1,\n      \"hasNextPage\": false,\n      \"hasPreviousPage\": false\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "categories", "{{categoryId}}"]
+            },
+            "description": "Retrieves a specific category by its ID. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "categories", "{{categoryId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Category fetched successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"name\": \"Work\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Personal Work\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "categories", "{{categoryId}}"]
+            },
+            "description": "Updates an existing category name. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Personal Work\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "categories", "{{categoryId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Category updated successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"name\": \"Personal Work\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "categories", "{{categoryId}}"]
+            },
+            "description": "Deletes a category permanently. Authentication required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/categories/{{categoryId}}",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "categories", "{{categoryId}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"Category deleted successfully\",\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"name\": \"Work\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "description": "Health check endpoints",
+      "item": [
+        {
+          "name": "Check API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:4000/api/v1/healthcheck",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4000",
+              "path": ["api", "v1", "healthcheck"]
+            },
+            "description": "Verifies that the API is running and healthy. Authentication not required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:4000/api/v1/healthcheck",
+                  "host": ["localhost"],
+                  "port": "4000",
+                  "path": ["api", "v1", "healthcheck"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"message\": \"API is healthy\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "todoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "categoryId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "verificationToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "resetToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

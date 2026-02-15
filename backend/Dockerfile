@@ -45,6 +45,6 @@ COPY --from=build /usr/src/app/dist ./dist
 
 
 
-EXPOSE 8000
+EXPOSE 4000
 
 CMD pnpm start
