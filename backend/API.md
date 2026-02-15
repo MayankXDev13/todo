@@ -649,6 +649,216 @@ Deletes a todo permanently.
 - `401`: Unauthorized
 - `404`: Todo not found
 
+## Category Endpoints
+
+### 1. Create Category
+
+Creates a new category for the authenticated user.
+
+**Endpoint:** `POST /categories`
+
+**Authentication:** Required
+
+**Request Body:**
+
+```json
+{
+  "name": "Work"
+}
+```
+
+**Field Requirements:**
+- `name`: Required, 1-256 characters, must be unique per user
+
+**Success Response (201):**
+
+```json
+{
+  "statusCode": 201,
+  "success": true,
+  "message": "Category created successfully",
+  "data": {
+    "id": "uuid",
+    "name": "Work",
+    "userId": "uuid",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- `400`: Validation error
+- `401`: Unauthorized
+- `409`: Category with this name already exists
+- `500`: Failed to create category
+
+### 2. Get All Categories
+
+Retrieves all categories for the authenticated user with pagination, filtering, and sorting.
+
+**Endpoint:** `GET /categories`
+
+**Authentication:** Required
+
+**Query Parameters:**
+
+| Parameter   | Type    | Description                                       | Default     |
+| ----------- | ------- | ------------------------------------------------- | ----------- |
+| `page`      | integer | Page number                                       | 1           |
+| `limit`     | integer | Items per page (max 100)                          | 10          |
+| `search`    | string  | Search by name (case-insensitive)                 | -           |
+| `sortBy`    | string  | Sort by field: `createdAt`, `name`                | `createdAt` |
+| `sortOrder` | string  | Sort direction: `asc` or `desc`                   | `desc`      |
+
+**Example Requests:**
+- `GET /categories` - Get first page with default limit
+- `GET /categories?page=2&limit=20` - Get page 2 with 20 items
+- `GET /categories?search=work` - Search categories containing "work"
+- `GET /categories?sortBy=name&sortOrder=asc` - Sort by name ascending
+
+**Success Response (200):**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Categories fetched successfully",
+  "data": {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Work",
+        "userId": "uuid",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "limit": 10,
+      "total": 5,
+      "totalPages": 1,
+      "hasNextPage": false,
+      "hasPreviousPage": false
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `401`: Unauthorized
+
+### 3. Get Category by ID
+
+Retrieves a specific category by its ID.
+
+**Endpoint:** `GET /categories/:id`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id`: UUID of the category
+
+**Success Response (200):**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Category fetched successfully",
+  "data": {
+    "id": "uuid",
+    "name": "Work",
+    "userId": "uuid",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- `400`: Invalid category ID
+- `401`: Unauthorized
+- `404`: Category not found
+
+### 4. Update Category
+
+Updates an existing category name.
+
+**Endpoint:** `PUT /categories/:id`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id`: UUID of the category
+
+**Request Body:**
+
+```json
+{
+  "name": "Personal Work"
+}
+```
+
+**Note:** At least one field must be provided for update.
+
+**Success Response (200):**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Category updated successfully",
+  "data": {
+    "id": "uuid",
+    "name": "Personal Work",
+    "userId": "uuid",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T12:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- `400`: No fields provided for update or validation error
+- `401`: Unauthorized
+- `404`: Category not found
+- `409`: Category with this name already exists
+
+### 5. Delete Category
+
+Deletes a category permanently. Note: Todos associated with this category will have their category reference set to null.
+
+**Endpoint:** `DELETE /categories/:id`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id`: UUID of the category
+
+**Success Response (200):**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Category deleted successfully",
+  "data": {
+    "id": "uuid",
+    "name": "Work",
+    "userId": "uuid",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- `400`: Invalid category ID
+- `401`: Unauthorized
+- `404`: Category not found
+
 ## Health Check
 
 ### Check API Health
@@ -700,6 +910,16 @@ Verifies that the API is running and healthy.
 | `createdAt`    | DateTime  | Creation timestamp                    |
 | `updatedAt`    | DateTime  | Last update timestamp                 |
 
+### Category
+
+| Field       | Type     | Description                       |
+| ----------- | -------- | --------------------------------- |
+| `id`        | UUID     | Unique identifier                 |
+| `name`      | String   | Category name (required)          |
+| `userId`    | UUID     | Owner's user ID                   |
+| `createdAt` | DateTime | Creation timestamp                |
+| `updatedAt` | DateTime | Last update timestamp             |
+
 ## Error Codes
 
 | Status Code | Description                                    |
@@ -728,6 +948,12 @@ Verifies that the API is running and healthy.
 - Priority must be: `low`, `medium`, or `high`
 - Category ID must be valid UUID
 - Todo ID must be valid UUID
+- For updates, at least one field must be provided
+
+### Category Validation
+- Name required, max 256 characters
+- Name must be unique per user
+- Category ID must be valid UUID
 - For updates, at least one field must be provided
 
 ### Pagination Validation
