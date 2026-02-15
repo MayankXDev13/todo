@@ -960,5 +960,6 @@ Verifies that the API is running and healthy.
 - Page must be positive integer
 - Limit must be positive integer, max 100
 - Search query max 255 characters
-- Sort by: `createdAt`, `dueDate`, `priority`
+- **Todos** - Sort by: `createdAt`, `dueDate`, `priority`
+- **Categories** - Sort by: `createdAt`, `name`
 - Sort order: `asc`, `desc`
