@@ -38,12 +38,14 @@ app.use(morganMiddleware);
 import healthCheckRouter from "./routes/healthcheck.routes";
 import userRouter from "./routes/auth/user.routes";
 import todoRouter from "./routes/todo/todo.routes";
+import categoryRouter from "./routes/category/category.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/todos", todoRouter);
+app.use("/api/v1/categories", categoryRouter);
 
 app.use(errorHandler);
 export default app;
