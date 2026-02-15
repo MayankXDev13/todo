@@ -1,22 +1,22 @@
+import Navbar from '@/components/todos/Navbar'
+import React from 'react'
 import { Metadata } from 'next';
-import { AppLayout } from '@/components/layout/app-layout';
-import { TodoHeader } from '@/components/todos/todo-header';
-import { TodoFilters } from '@/components/todos/todo-filters';
-import { TodoList } from '@/components/todos/todo-list';
+import { TodoList } from '@/components/todos/TodoList';
 
 export const metadata: Metadata = {
   title: 'My Todos - TodoApp',
   description: 'Manage your todos',
 };
 
-export default function TodosPage() {
+function TodosPage() {
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        <TodoHeader />
-        <TodoFilters />
-        <TodoList />
+    <div className='mx-auto max-w-6xl w-full px-4 py-6'>
+      <Navbar/>
+      <div className="mt-8">
+        <TodoList/>
       </div>
-    </AppLayout>
-  );
+    </div>
+  )
 }
+
+export default TodosPage
