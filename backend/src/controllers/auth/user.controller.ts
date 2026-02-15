@@ -17,7 +17,6 @@ import {
 
 const generateAccessAndRefreshToken = async (userId: string) => {
   try {
-    // Find the user by ID
     const user = await db.query.User.findFirst({
       where: eq(User.id, userId),
     });
@@ -30,7 +29,9 @@ const generateAccessAndRefreshToken = async (userId: string) => {
       throw new ApiError(500, "Server configuration error");
     }
 
-    // Generate access token
+    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY || "15m";
+    const refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY || "7d";
+
     const accessToken = jwt.sign(
       {
         userId: user.id,
@@ -38,31 +39,20 @@ const generateAccessAndRefreshToken = async (userId: string) => {
         username: user.username,
       },
       process.env.ACCESS_TOKEN_SECRET as string,
-      {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      } as jwt.SignOptions,
+      { expiresIn: accessTokenExpiry } as jwt.SignOptions,
     );
 
-    // Generate refresh token
     const refreshToken = jwt.sign(
       { userId: user.id },
       process.env.REFRESH_TOKEN_SECRET as string,
-      { expiresIn: process.env.REFRESH_TOKEN_EXPIRY } as jwt.SignOptions,
+      { expiresIn: refreshTokenExpiry } as jwt.SignOptions,
     );
 
-    // Store the refresh token in the database
-    await db
-      .update(User)
-      .set({
-        refreshToken: refreshToken,
-      })
-      .where(eq(User.id, userId));
+    await db.update(User).set({ refreshToken }).where(eq(User.id, userId));
 
     return { accessToken, refreshToken };
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
+    if (error instanceof ApiError) throw error;
     console.error("Token generation error:", error);
     throw new ApiError(
       500,
@@ -84,22 +74,34 @@ const generateTemporaryToken = () => {
   return { hashedToken, unHashedToken, tokenExpiry };
 };
 
+const cookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict" as const,
+});
+
+
+
+
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
 
-    logger.info("Registering user", { email, username, password });
+    logger.info("Registering user", { email, username });
 
     if (!email || !username || !password) {
       throw new ApiError(400, "All fields are required");
     }
 
     const existingUser = await db.query.User.findFirst({
-      where: eq(User.email, email),
+      where: or(eq(User.email, email), eq(User.username, username)),
     });
 
     if (existingUser) {
-      throw new ApiError(400, "User already exists");
+      if (existingUser.email === email) {
+        throw new ApiError(409, "A user with this email already exists");
+      }
+      throw new ApiError(409, "A user with this username already exists");
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -107,7 +109,7 @@ export const registerUser = asyncHandler(
     const user = await db
       .insert(User)
       .values({
-        email: email,
+        email,
         password: hashedPassword,
         username,
         loginType: "email_password",
@@ -120,9 +122,7 @@ export const registerUser = asyncHandler(
 
     return res
       .status(201)
-      .json(
-        new ApiResponse(201, { user: user }, "User registered successfully"),
-      );
+      .json(new ApiResponse(201, { user }, "User registered successfully"));
   },
 );
 
@@ -138,13 +138,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    throw new ApiError(400, "User does not exist");
+    throw new ApiError(401, "Invalid email or password");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new ApiError(400, "Invalid User credentials");
+    throw new ApiError(401, "Invalid email or password");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -162,10 +162,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
+  const options = cookieOptions();
 
   return res
     .status(200)
@@ -187,15 +184,10 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 
   await db
     .update(User)
-    .set({
-      refreshToken: null,
-    })
+    .set({ refreshToken: null })
     .where(eq(User.id, req.user.id));
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
+  const options = cookieOptions();
 
   return res
     .status(200)
@@ -211,7 +203,7 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Verification token is required");
   }
 
-  let hashedToken = crypto
+  const hashedToken = crypto
     .createHash("sha256")
     .update(verificationToken as string)
     .digest("hex");
@@ -222,6 +214,7 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
       gt(User.emailVerificationExpiry, new Date()),
     ),
   });
+
   if (!user) {
     throw new ApiError(400, "Token is invalid or expired");
   }
@@ -247,7 +240,7 @@ export const resendEmailVerification = asyncHandler(
     });
 
     if (!user) {
-      throw new ApiError(404, "User does not exists", []);
+      throw new ApiError(404, "User does not exist");
     }
 
     if (user.isEmailVerified) {
@@ -270,9 +263,7 @@ export const resendEmailVerification = asyncHandler(
       subject: "Please verify your email",
       mailgenContent: emailVerificationMailgenContent(
         user.username!,
-        `${req.protocol}://${req.get(
-          "host",
-        )}/api/v1/users/verify-email/${unHashedToken}`,
+        `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
       ),
     });
 
@@ -286,8 +277,6 @@ export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response) => {
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
-
-    logger.info(`Incoming Refresh Token: ${incomingRefreshToken}`);
 
     if (!incomingRefreshToken) {
       throw new ApiError(401, "Refresh token is missing");
@@ -307,18 +296,19 @@ export const refreshAccessToken = asyncHandler(
         throw new ApiError(401, "Invalid refresh token");
       }
 
-      if (incomingRefreshToken !== user?.refreshToken) {
+      if (incomingRefreshToken !== user.refreshToken) {
         throw new ApiError(401, "Refresh token is expired or used");
       }
-      const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      };
 
       const { accessToken, refreshToken: newRefreshToken } =
         await generateAccessAndRefreshToken(user.id);
 
-      await db.update(User).set({ refreshToken: newRefreshToken });
+      await db
+        .update(User)
+        .set({ refreshToken: newRefreshToken })
+        .where(eq(User.id, user.id));
+
+      const options = cookieOptions();
 
       return res
         .status(200)
@@ -331,7 +321,10 @@ export const refreshAccessToken = asyncHandler(
             "Access token refreshed",
           ),
         );
-    } catch (error) {}
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(401, "Invalid or expired refresh token");
+    }
   },
 );
 
@@ -343,15 +336,19 @@ export const forgotPasswordRequest = asyncHandler(
     });
 
     if (!user) {
-      throw new ApiError(404, "User does not exists");
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            {},
+            "If an account with that email exists, a password reset link has been sent",
+          ),
+        );
     }
 
     const { hashedToken, unHashedToken, tokenExpiry } =
       generateTemporaryToken();
-
-    logger.info(`Unhashed Token: ${unHashedToken}`);
-    logger.info(`Hashed Token: ${hashedToken}`);
-    logger.info(`Token Expiry: ${tokenExpiry}`);
 
     await db
       .update(User)
@@ -376,7 +373,7 @@ export const forgotPasswordRequest = asyncHandler(
         new ApiResponse(
           200,
           {},
-          "Password reset mail has been sent on your mail id",
+          "If an account with that email exists, a password reset link has been sent",
         ),
       );
   },
@@ -387,14 +384,10 @@ export const resetForgottenPassword = asyncHandler(
     const { resetToken } = req.params;
     const { newPassword } = req.body;
 
-    logger.info(`Reset Token: ${resetToken}`);
-
     const hashedToken = crypto
       .createHash("sha256")
       .update(resetToken as string)
       .digest("hex");
-
-    logger.info(`Hashed Reset Token: ${hashedToken}`);
 
     const user = await db.query.User.findFirst({
       where: and(
@@ -434,29 +427,32 @@ export const changeCurrentPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
 
-    logger.info(`Old Password: ${oldPassword}`);
-    logger.info(`New Password: ${newPassword}`);
-
     const user = await db.query.User.findFirst({
       where: eq(User.id, req.user!.id!),
     });
 
-    const isPasswordValid = bcrypt.compare(oldPassword, user!.password!);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password!);
 
     if (!isPasswordValid) {
       throw new ApiError(401, "Invalid old password");
     }
-    const isSamePassword = await bcrypt.compare(newPassword, user!.password!);
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password!);
 
     if (isSamePassword) {
       throw new ApiError(400, "New password cannot be same as old password");
     }
 
     const hashPassword = await bcrypt.hash(newPassword, 12);
+
     await db
       .update(User)
       .set({ password: hashPassword })
-      .where(eq(User.id, user?.id!));
+      .where(eq(User.id, user.id));
 
     return res
       .status(200)

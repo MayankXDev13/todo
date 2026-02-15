@@ -67,7 +67,7 @@ Creates a new user account.
 
 **Validation Rules:**
 - `email`: Valid email format
-- `username`: Minimum 3 characters
+- `username`: 3-30 characters, letters, numbers, and underscores only
 - `password`: Minimum 8 characters, must contain at least one uppercase, one lowercase, and one number
 
 **Success Response (201):**
@@ -225,7 +225,7 @@ Retrieves information about the currently authenticated user.
 
 Verifies user's email address using a verification token sent via email.
 
-**Endpoint:** `GET /users/verify-email/:verificationToken`
+**Endpoint:** `POST /users/verify-email/:verificationToken`
 
 **Authentication:** Not Required
 
@@ -305,17 +305,15 @@ Initiates password reset process by sending a reset link to email.
 
 Resets password using the token from reset email.
 
-**Endpoint:** `POST /users/reset-password/:resetToken`
+**Endpoint:** `POST /users/reset-password`
 
 **Authentication:** Not Required
-
-**URL Parameters:**
-- `resetToken`: Token received in password reset email
 
 **Request Body:**
 
 ```json
 {
+  "resetToken": "hexadecimal_token_from_email",
   "newPassword": "NewSecurePass123"
 }
 ```
@@ -423,7 +421,7 @@ Creates a new todo item.
 
 ### 2. Get All Todos
 
-Retrieves all todos for the authenticated user with pagination and filtering.
+Retrieves all todos for the authenticated user with pagination, filtering, and sorting.
 
 **Endpoint:** `GET /todos`
 
@@ -438,6 +436,8 @@ Retrieves all todos for the authenticated user with pagination and filtering.
 | `search`   | string  | Search by title (case-insensitive)                   | -       |
 | `completed`| string  | Filter by completion status (`true` or `false`)      | -       |
 | `priority` | string  | Filter by priority (`low`, `medium`, or `high`)      | -       |
+| `sortBy`   | string  | Sort by field: `createdAt`, `dueDate`, `priority`    | `createdAt` |
+| `sortOrder`| string  | Sort direction: `asc` or `desc`                     | `desc` |
 
 **Example Requests:**
 - `GET /todos` - Get first page with default limit
@@ -445,6 +445,8 @@ Retrieves all todos for the authenticated user with pagination and filtering.
 - `GET /todos?search=shopping` - Search todos containing "shopping"
 - `GET /todos?completed=false` - Get incomplete todos
 - `GET /todos?priority=high` - Get high priority todos
+- `GET /todos?sortBy=dueDate&sortOrder=asc` - Sort by due date ascending
+- `GET /todos?sortBy=priority&sortOrder=desc` - Sort by priority descending
 
 **Success Response (200):**
 
@@ -573,7 +575,44 @@ Updates an existing todo. Only provided fields will be updated.
 - `401`: Unauthorized
 - `404`: Todo not found
 
-### 5. Delete Todo
+### 5. Toggle Todo Status
+
+Toggles the completed status of a todo between true and false.
+
+**Endpoint:** `PATCH /todos/:id/toggle`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id`: UUID of the todo
+
+**Success Response (200):**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Todo marked as completed",
+  "data": {
+    "id": "uuid",
+    "title": "Buy groceries",
+    "description": "Milk, eggs, and bread",
+    "dueDate": "2024-01-15T10:00:00.000Z",
+    "userId": "uuid",
+    "priority": "high",
+    "categoryId": "uuid",
+    "isCompleted": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T12:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+- `401`: Unauthorized
+- `404`: Todo not found
+
+### 6. Delete Todo
 
 Deletes a todo permanently.
 
@@ -677,17 +716,23 @@ Verifies that the API is running and healthy.
 
 ### User Validation
 - Email must be valid format
-- Username minimum 3 characters
-- Password minimum 8 characters with uppercase, lowercase, and number
+- Username: 3-30 characters, letters, numbers, and underscores only
+- Password: Minimum 8 characters, must contain at least one uppercase, one lowercase, and one number
+- Reset token: 64-character hexadecimal string
+- Verification token: 64-character hexadecimal string
 
 ### Todo Validation
 - Title required, max 256 characters
 - Description max 256 characters
-- Due date must be valid ISO 8601 datetime
+- Due date must be valid ISO 8601 datetime string
 - Priority must be: `low`, `medium`, or `high`
 - Category ID must be valid UUID
 - Todo ID must be valid UUID
+- For updates, at least one field must be provided
 
 ### Pagination Validation
 - Page must be positive integer
 - Limit must be positive integer, max 100
+- Search query max 255 characters
+- Sort by: `createdAt`, `dueDate`, `priority`
+- Sort order: `asc`, `desc`

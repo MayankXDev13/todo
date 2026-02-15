@@ -1,19 +1,32 @@
 import { Router } from "express";
-import { createTodo, deleteTodo, getTodoById, getTodos, updateTodo } from "../../controllers/todo/todo.controller";
+import {
+  createTodo,
+  deleteTodo,
+  getTodoById,
+  getTodos,
+  toggleTodo,
+  updateTodo,
+} from "../../controllers/todo/todo.controller";
 import { verifyJWT } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-router.route("/").post(verifyJWT, createTodo);
+// Apply verifyJWT to all routes
+router.use(verifyJWT);
 
-// /todos -> Get all todos for authenticated user (default pagination)
-// /todos?page=2&limit=20 -> Get todos with custom pagination
-// /todos?search=shopping -> Search todos by title or description
-// /todos?completed=true/false -> Get todos by completed status
-// /todos?priority=high/medium/low -> Get todos by priority
-router.route("/").get(verifyJWT, getTodos);
+// /todos
+// GET  -> Get all todos (supports ?page, ?limit, ?search, ?completed, ?priority, ?sortBy, ?sortOrder)
+// POST -> Create a new todo
+router.route("/").get(getTodos).post(createTodo);
 
-router.route("/:id").get(verifyJWT, getTodoById);
-router.route("/:id").put(verifyJWT, updateTodo);
-router.route("/:id").delete(verifyJWT, deleteTodo);
+// /todos/:id
+// GET    -> Get a single todo by ID
+// PUT    -> Update a todo by ID
+// DELETE -> Delete a todo by ID
+router.route("/:id").get(getTodoById).put(updateTodo).delete(deleteTodo);
+
+// /todos/:id/toggle
+// PATCH -> Toggle the completed status of a todo
+router.route("/:id/toggle").patch(toggleTodo);
+
 export default router;
